@@ -14,28 +14,32 @@ jobs:
     name: Check for new version
     runs-on: macos-latest
     steps:
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+      - uses: Homebrew/actions/setup-homebrew@main
+
+      - uses: actions/checkout@v4
+        with:
+          path: homebrew-stretchly
+
+      - name: Register tap
+        run: |
+          TAP_DIR="$(brew --repository)/Library/Taps/${{ github.repository_owner }}"
+          mkdir -p "$TAP_DIR"
+          mv homebrew-stretchly "$TAP_DIR/homebrew-stretchly"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Check for updates
         id: livecheck
         run: |
-          json=$(brew livecheck --cask stretchly --json)
-          new_version=$(echo "$json" | jq -r '.[0].version.latest')
-          current_version=$(echo "$json" | jq -r '.[0].version.current')
-          outdated=$(echo "$json" | jq -r '.[0].version.outdated')
-          {
-            echo "new_version=$new_version"
-            echo "current_version=$current_version"
-            echo "outdated=$outdated"
-          } >> "$GITHUB_OUTPUT"
+          json=$(brew livecheck --cask ${{ github.repository_owner }}/stretchly/stretchly --json)
+          echo "outdated=$(echo "$json" | jq -r '.[0].version.outdated')" >> "$GITHUB_OUTPUT"
+          echo "new_version=$(echo "$json" | jq -r '.[0].version.latest')" >> "$GITHUB_OUTPUT"
 
       - name: Bump cask PR
         if: steps.livecheck.outputs.outdated == 'true'
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          brew bump-cask-pr stretchly \
+          brew bump-cask-pr ${{ github.repository_owner }}/stretchly/stretchly \
             --version "${{ steps.livecheck.outputs.new_version }}" \
-            --no-browse
+            --no-browse --no-fork
