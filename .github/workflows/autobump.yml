@@ -16,12 +16,17 @@ jobs:
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@main
+
+      - name: Configure git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Check for updates
         id: livecheck
         run: |
-          json=$(brew livecheck --cask stretchly --json)
+          json=$(brew livecheck --cask hovancik/stretchly/stretchly --json)
           new_version=$(echo "$json" | jq -r '.[0].version.latest')
           current_version=$(echo "$json" | jq -r '.[0].version.current')
           outdated=$(echo "$json" | jq -r '.[0].version.outdated')
@@ -36,6 +41,6 @@ jobs:
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          brew bump-cask-pr stretchly \
+          brew bump-cask-pr hovancik/stretchly/stretchly \
             --version "${{ steps.livecheck.outputs.new_version }}" \
-            --no-browse
+            --no-browse --no-fork

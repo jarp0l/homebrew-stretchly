@@ -9,12 +9,8 @@ Homebrew [Tap](https://docs.brew.sh/Taps) for [Stretchly](https://hovancik.net/s
 ## Install
 
 ```sh
-brew install --cask --no-quarantine hovancik/stretchly/stretchly
+brew install --cask hovancik/stretchly/stretchly
 ```
-
-> **Security note:** The command above uses `--no-quarantine`, which reduces
-> macOS Gatekeeper protections. Only use this flag if you understand and accept
-> the security tradeoff.
 
 Or, if you prefer to tap first:
 
@@ -27,7 +23,7 @@ brew install --cask stretchly
 > Gatekeeper may prevent it from opening. To allow it, run:
 >
 > ```sh
-> xattr -cr "$(brew --caskroom)/stretchly/$(brew list --cask --versions stretchly | awk '{print $2}')/Stretchly.app"
+> xattr -dr com.apple.quarantine /Applications/Stretchly.app
 > ```
 >
 > or right-click the app and choose **Open**.
