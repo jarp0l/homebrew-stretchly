@@ -31,7 +31,7 @@ cask "stretchly" do
   caveats <<~EOS
     Stretchly is not signed with an Apple Developer certificate.
     macOS Gatekeeper may block it from opening. To allow it, run:
-      xattr -cr "$(brew --caskroom)/stretchly/#{version}/Stretchly.app"
+      xattr -dr com.apple.quarantine /Applications/Stretchly.app
     or right-click the app and choose "Open".
   EOS
 end
