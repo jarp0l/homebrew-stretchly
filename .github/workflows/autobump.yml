@@ -18,6 +18,11 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
 
+      - name: Configure git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Check for updates
         id: livecheck
         run: |
