@@ -16,18 +16,6 @@ jobs:
     steps:
       - uses: Homebrew/actions/setup-homebrew@main
 
-      - uses: actions/checkout@v4
-        with:
-          path: homebrew-stretchly
-
-      - name: Register tap
-        run: |
-          TAP_DIR="$(brew --repository)/Library/Taps/${{ github.repository_owner }}"
-          mkdir -p "$TAP_DIR"
-          mv homebrew-stretchly "$TAP_DIR/homebrew-stretchly"
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
       - name: Check for updates
         id: livecheck
         run: |
