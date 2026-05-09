@@ -3,11 +3,21 @@ name: CI
 on:
   push:
     branches: [trunk]
+    paths:
+      - "Casks/**"
+      - ".github/workflows/ci.yml"
   pull_request:
+    paths:
+      - "Casks/**"
+      - ".github/workflows/ci.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   HOMEBREW_NO_AUTO_UPDATE: 1
@@ -19,16 +29,19 @@ jobs:
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@main
 
       - name: Run brew test-bot --only-tap-syntax
         run: brew test-bot --only-tap-syntax
 
+      - name: Audit cask
+        run: brew audit --cask --online ${{ github.repository_owner }}/stretchly/stretchly
+
       - name: Install cask
-        run: brew install --cask hovancik/stretchly/stretchly
+        run: brew install --cask ${{ github.repository_owner }}/stretchly/stretchly
 
       - name: Verify app exists
         run: test -d "/Applications/Stretchly.app"
 
       - name: Uninstall cask
-        run: brew uninstall --cask hovancik/stretchly/stretchly
+        run: brew uninstall --cask ${{ github.repository_owner }}/stretchly/stretchly
